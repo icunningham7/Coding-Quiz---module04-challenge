@@ -35,7 +35,8 @@ var questions = [
 ];
 
 // Quiz Variables
-var time = questions.length * 1;
+var interval = 2;
+var time = questions.length * interval;
 var timerCount;
 var score;
 var qIndex = 0;
@@ -49,11 +50,15 @@ var timeEl = document.getElementById('time');
 var startBtn = document.getElementById('start');
 var overlayEl = document.getElementById('overlay');
 var quizEl = document.getElementById('quiz');
+var responseEl = document.getElementById('question-response');
+var responseBackingEl = document.getElementById('backing');
 var questionEl;
+var answerEl;
 
 // Event Listeners
 startBtn.addEventListener("click", startQuiz);
 
+// Main Quiz Function
 function startQuiz() {
 
     // Hide the overlay and reveal the questions
@@ -62,12 +67,13 @@ function startQuiz() {
     timeDisplayEL.classList.remove('hide');
 
     // Update and start the timer
-    timerCount = setInterval(countDown, 1000);
+    timerCount = setInterval(countDown, 10000);
 
     // Show Questions
     displayQuestion();
 };
 
+// Time Decrementor
 function countDown() {
     // While there is time left
     if (time > 0) {
@@ -75,7 +81,6 @@ function countDown() {
         time--;
         // Update shown time
         timeEl.textContent = time;
-        console.log(time);
     } else {
         // When time runs out ends the game
         clearInterval(timerCount);
@@ -83,47 +88,80 @@ function countDown() {
     }
 };
 
-
+// Builds the HTML for each Question
 function displayQuestion() {
-    // let currentQuestion = questions[questionIndex];
+    
+    // Container for the question 
     questionEl = document.createElement('div');
 
+    // Prompt text for the question
     let qPromptEl = document.createElement('p');
     qPromptEl.classList.add('question-promt')
     qPromptEl.innerText = questions[qIndex].prompt;
     questionEl.appendChild(qPromptEl);
 
-    let qListEl = document.createElement('ul');
+    // List of question choices
+    let qListEl = document.createElement('ol');
     qListEl.classList.add('question-list');
+    // Iterates over the list of choices and adds them to the list
     for (i = 0; i < questions[qIndex].choices.length; i++) {
         let choiceEl = document.createElement('li');
         choiceEl.classList.add('question');
-        choiceEl.innerHTML = questions[qIndex].choices[i];
+        let choiceBtn = document.createElement('button');
+        choiceBtn.innerHTML = (`${(i + 1)}. ${questions[qIndex].choices[i]}`);
+        choiceBtn.setAttribute('value', questions[qIndex].choices[i])
+        choiceEl.appendChild(choiceBtn);
         qListEl.appendChild(choiceEl);
         choiceEl.addEventListener('click', checkAnswer);
     }
+
+    // Updates the HTML with the created DOM Elements
     questionEl.appendChild(qListEl);
-
-    // question.appendChild(questionList);
-
     quizEl.append(questionEl);
 
 };
 
+// Removes the current question
 function clearQuestion() {
     quizEl.removeChild(questionEl);
 }
 
+// Checks if the current answer is correct
 function checkAnswer(event) {
-    event.preventDefault();
-    if (event.target.innerText === questions[qIndex].answer) {
-        console.log("Correct");
-    } else {
-        console.log("Wrong!");
+// Only activate on button clicks
+    if (event.target.nodeName === 'BUTTON') {
+        if (event.target.attributes.value.value === questions[qIndex].answer) {
+            showAnswer('correct');
+        } else {
+            showAnswer('wrong');
+            
+            // Time penatly for wrong answers
+            time -= interval;
+            if (time <= 0) {
+                time = 0;
+                endQuiz();
+            }
+        }
     }
-    nextQuestion();
 }
 
+// Shows the correct answer with a background to indicate correct/wrong answer
+function showAnswer(answerStatus) {
+    // Reveals the response element and adds the correct answer to it
+    responseBackingEl.classList.remove('hide');
+    responseEl.classList.add(answerStatus);
+    responseEl.innerText = `Correct Answer: ${questions[qIndex].answer}`;
+
+    // Keeps the answer visible for 500ms
+    setTimeout(function () {
+        nextQuestion();
+        responseBackingEl.classList.add('hide');
+        responseEl.classList.remove(answerStatus);
+    }, 500);
+
+}
+
+// Updates the questions index (getting a new question) if available, else ending the quiz
 function nextQuestion() {
     qIndex++;
     if (qIndex < questions.length) {
@@ -139,5 +177,17 @@ function endQuiz() {
         clearInterval(timerCount);
     }
     clearQuestion();
+    setHighscore();
     console.log("Game Over");
 };
+
+function setHighscore(event) {
+    score = {
+        score: time,
+        name: event.value
+    };
+
+    highscoreList.push(score);
+    localStorage.setItem('highscores', JSON.stringify(highscoreList));
+
+}

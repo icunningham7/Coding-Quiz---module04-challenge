@@ -3,6 +3,9 @@
     --c-primary: #563d7c;
     --c-primary-hover: #8570a5;
     --c-light: #ffffff;
+    --c-dark: #000000;
+    --c-correct: #78f17ecc;
+    --c-wrong: #da6666cc;
 }
 
 body,
@@ -33,10 +36,12 @@ nav div {
 }
 
 button { 
+    display: block;
     background: var(--c-primary);
     color: var(--c-light);
     margin: 2%;
     padding: 7px 10px;
+    border-radius: 5px;
 }
 
 button:hover {
@@ -56,17 +61,60 @@ h1 {
     font-weight: normal;
 }
 
+p {
+    font-weight: 700;
+    font-size: x-large;
+}
+
 .gamePrompt {
-    max-width: 920px;
+    max-width: 900px;
     margin: auto;
     padding: 5% 10%;
 }
 
-.gamePrompt p {
-    font-weight: large;
-    font-size: x-large;
+#quiz {
+    max-width: 600px;
+    text-align: center;
+    margin: 5% auto;
 }
 
+.question-list {
+    text-align: left;
+}
+
+.question-list li {
+    list-style: none;
+}
+
+.question button {
+    margin: 5px;
+    padding: 5px;
+}
+
+#question-response {
+    display: inline-block;
+    font-size: xx-large;
+    transition: ease-in 250ms;
+    padding: 25%;
+}
+
+#question-response.correct {
+    background: var(--c-correct);
+}
+
+#question-response.wrong {
+    background: var(--c-wrong);
+}
+
+#backing {
+    position: absolute;
+    top: 150px;
+    height: 50%;
+    width: 100%;
+    text-align: center;
+    background: #ffffff;
+    z-index: 2;
+}
 
 #overlay {
     height: calc(100vh - 100px);
