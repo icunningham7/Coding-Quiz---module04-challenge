@@ -36,6 +36,7 @@ var questions = [
 
 // Quiz Variables
 var time = questions.length * 1;
+var timerCount;
 var score;
 var qIndex = 0;
 
@@ -48,6 +49,7 @@ var timeEl = document.getElementById('time');
 var startBtn = document.getElementById('start');
 var overlayEl = document.getElementById('overlay');
 var quizEl = document.getElementById('quiz');
+var questionEl;
 
 // Event Listeners
 startBtn.addEventListener("click", startQuiz);
@@ -60,7 +62,7 @@ function startQuiz() {
     timeDisplayEL.classList.remove('hide');
 
     // Update and start the timer
-    var timerCount = setInterval(countDown, 1000);
+    timerCount = setInterval(countDown, 1000);
 
     // Show Questions
     displayQuestion();
@@ -76,6 +78,7 @@ function countDown() {
         console.log(time);
     } else {
         // When time runs out ends the game
+        clearInterval(timerCount);
         endQuiz();
     }
 };
@@ -83,12 +86,12 @@ function countDown() {
 
 function displayQuestion() {
     // let currentQuestion = questions[questionIndex];
-    let question = document.createElement('div');
+    questionEl = document.createElement('div');
 
     let qPromptEl = document.createElement('p');
     qPromptEl.classList.add('question-promt')
     qPromptEl.innerText = questions[qIndex].prompt;
-    question.appendChild(qPromptEl);
+    questionEl.appendChild(qPromptEl);
 
     let qListEl = document.createElement('ul');
     qListEl.classList.add('question-list');
@@ -97,16 +100,44 @@ function displayQuestion() {
         choiceEl.classList.add('question');
         choiceEl.innerHTML = questions[qIndex].choices[i];
         qListEl.appendChild(choiceEl);
+        choiceEl.addEventListener('click', checkAnswer);
     }
-    question.appendChild(qListEl);
+    questionEl.appendChild(qListEl);
 
     // question.appendChild(questionList);
 
-    quizEl.append(question);
+    quizEl.append(questionEl);
 
 };
 
+function clearQuestion() {
+    quizEl.removeChild(questionEl);
+}
+
+function checkAnswer(event) {
+    event.preventDefault();
+    if (event.target.innerText === questions[qIndex].answer) {
+        console.log("Correct");
+    } else {
+        console.log("Wrong!");
+    }
+    nextQuestion();
+}
+
+function nextQuestion() {
+    qIndex++;
+    if (qIndex < questions.length) {
+        clearQuestion();
+        displayQuestion();
+    } else {
+        endQuiz();
+    }
+}
 
 function endQuiz() {
-
+    if (time > 0) {
+        clearInterval(timerCount);
+    }
+    clearQuestion();
+    console.log("Game Over");
 };
