@@ -48,6 +48,10 @@ button:hover {
     background: var(--c-primary-hover);
 }
 
+form button {
+    display: inline-block;
+}
+
 a {
     color: var(--c-primary);
 }
@@ -108,7 +112,7 @@ p {
 
 #backing {
     position: absolute;
-    top: 150px;
+    top: 100px;
     height: 50%;
     width: 100%;
     text-align: center;

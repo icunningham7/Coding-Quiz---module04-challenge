@@ -24,7 +24,7 @@ var questions = [
         prompt:
             '____ words in JavaScript cannot be used as variables, labels, or function names',
         choices: ['Reserved', 'Special', 'Static', 'Hidden'],
-        answer: 'quotes',
+        answer: 'Reserved',
     },
     {
         prompt:
@@ -35,7 +35,7 @@ var questions = [
 ];
 
 // Quiz Variables
-var interval = 2;
+var interval = 15;
 var time = questions.length * interval;
 var timerCount;
 var score;
@@ -52,6 +52,9 @@ var overlayEl = document.getElementById('overlay');
 var quizEl = document.getElementById('quiz');
 var responseEl = document.getElementById('question-response');
 var responseBackingEl = document.getElementById('backing');
+var highscorePromptEl = document.getElementById('highscore-prompt');
+var nameForm = document.getElementById('highscore-name');
+var nameField = document.getElementById('name');
 var questionEl;
 var answerEl;
 
@@ -60,14 +63,14 @@ startBtn.addEventListener("click", startQuiz);
 
 // Main Quiz Function
 function startQuiz() {
-
+    timeEl.textContent = time;
     // Hide the overlay and reveal the questions
     overlayEl.classList.add('hide');
     quizEl.classList.remove('hide');
     timeDisplayEL.classList.remove('hide');
 
     // Update and start the timer
-    timerCount = setInterval(countDown, 10000);
+    timerCount = setInterval(countDown, 1000);
 
     // Show Questions
     displayQuestion();
@@ -75,6 +78,7 @@ function startQuiz() {
 
 // Time Decrementor
 function countDown() {
+    console.log(`time: ${time}`);
     // While there is time left
     if (time > 0) {
         // Decrement time
@@ -84,6 +88,7 @@ function countDown() {
     } else {
         // When time runs out ends the game
         clearInterval(timerCount);
+        console.log("Countdown end");
         endQuiz();
     }
 };
@@ -113,7 +118,10 @@ function displayQuestion() {
         choiceEl.appendChild(choiceBtn);
         qListEl.appendChild(choiceEl);
         choiceEl.addEventListener('click', checkAnswer);
+
     }
+
+    console.log(qIndex + " " + questions[qIndex].prompt);
 
     // Updates the HTML with the created DOM Elements
     questionEl.appendChild(qListEl);
@@ -123,13 +131,17 @@ function displayQuestion() {
 
 // Removes the current question
 function clearQuestion() {
+    if (!quizEl.hasChildNodes()) {
+        return;
+    }
     quizEl.removeChild(questionEl);
 }
 
 // Checks if the current answer is correct
 function checkAnswer(event) {
+    event.preventDefault();
 // Only activate on button clicks
-    if (event.target.nodeName === 'BUTTON') {
+    if (event.target.nodeName === 'BUTTON' && qIndex <= questions.length) {
         if (event.target.attributes.value.value === questions[qIndex].answer) {
             showAnswer('correct');
         } else {
@@ -139,7 +151,6 @@ function checkAnswer(event) {
             time -= interval;
             if (time <= 0) {
                 time = 0;
-                endQuiz();
             }
         }
     }
@@ -157,34 +168,47 @@ function showAnswer(answerStatus) {
         nextQuestion();
         responseBackingEl.classList.add('hide');
         responseEl.classList.remove(answerStatus);
-    }, 500);
+    }, 250);
 
 }
 
 // Updates the questions index (getting a new question) if available, else ending the quiz
 function nextQuestion() {
     qIndex++;
-    if (qIndex < questions.length) {
+    if (time < 1 || qIndex >= questions.length) {
+        clearQuestion();
+        qIndex = questions.length;
+        console.log("Timer end");
+        endQuiz();
+    } else if (qIndex < questions.length) {
         clearQuestion();
         displayQuestion();
-    } else {
-        endQuiz();
-    }
+    } 
 }
 
 function endQuiz() {
+    timeEl.textContent = time;
     if (time > 0) {
         clearInterval(timerCount);
     }
     clearQuestion();
-    setHighscore();
+    showForm();
     console.log("Game Over");
 };
 
+
+function showForm() {
+    highscorePromptEl.classList.remove('hide');
+    nameForm.addEventListener('submit', setHighscore);
+}
+
 function setHighscore(event) {
+    event.preventDefault();
+    console.log("Form Submit");
+
     score = {
         score: time,
-        name: event.value
+        name: nameField.value
     };
 
     highscoreList.push(score);
