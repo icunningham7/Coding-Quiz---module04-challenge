@@ -71,6 +71,7 @@ p {
 }
 
 .gamePrompt {
+    text-align: center;
     max-width: 900px;
     margin: auto;
     padding: 5% 10%;
@@ -93,6 +94,14 @@ p {
 .question button {
     margin: 5px;
     padding: 5px;
+}
+
+.scores-controls{
+    text-align: center;
+}
+
+.scores-controls button {
+    display: inline-block;
 }
 
 #question-response {
@@ -124,6 +133,21 @@ p {
     height: calc(100vh - 100px);
     text-align: center;
     z-index: 2;
+}
+
+#overlay button {
+    display: inline-block;
+}
+
+.wrapper {
+    width: 40%;
+    min-width: 300px;
+    margin: 0 auto;
+}
+
+#highscore-list {
+    text-align: center;
+    list-style-position: inside;
 }
 
 .hide {

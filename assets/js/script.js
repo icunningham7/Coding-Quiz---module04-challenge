@@ -43,10 +43,11 @@ var qIndex = 0;
 
 // Highscore Variables
 var highscoreList = JSON.parse(localStorage.getItem("highscores")) || [];
-
+var storedHighscores;
 // HTML Elements
 var timeDisplayEL = document.getElementById('timer');
 var timeEl = document.getElementById('time');
+var finalTimeEl;
 var startBtn = document.getElementById('start');
 var overlayEl = document.getElementById('overlay');
 var quizEl = document.getElementById('quiz');
@@ -78,7 +79,6 @@ function startQuiz() {
 
 // Time Decrementor
 function countDown() {
-    console.log(`time: ${time}`);
     // While there is time left
     if (time > 0) {
         // Decrement time
@@ -88,7 +88,6 @@ function countDown() {
     } else {
         // When time runs out ends the game
         clearInterval(timerCount);
-        console.log("Countdown end");
         endQuiz();
     }
 };
@@ -120,8 +119,6 @@ function displayQuestion() {
         choiceEl.addEventListener('click', checkAnswer);
 
     }
-
-    console.log(qIndex + " " + questions[qIndex].prompt);
 
     // Updates the HTML with the created DOM Elements
     questionEl.appendChild(qListEl);
@@ -165,9 +162,9 @@ function showAnswer(answerStatus) {
 
     // Keeps the answer visible for 500ms
     setTimeout(function () {
-        nextQuestion();
         responseBackingEl.classList.add('hide');
         responseEl.classList.remove(answerStatus);
+        nextQuestion();
     }, 250);
 
 }
@@ -175,17 +172,19 @@ function showAnswer(answerStatus) {
 // Updates the questions index (getting a new question) if available, else ending the quiz
 function nextQuestion() {
     qIndex++;
+    // If time is up or there are no more questions
     if (time < 1 || qIndex >= questions.length) {
         clearQuestion();
         qIndex = questions.length;
-        console.log("Timer end");
         endQuiz();
+    // If there are more questions clear the current one and get the next one
     } else if (qIndex < questions.length) {
         clearQuestion();
         displayQuestion();
     } 
 }
 
+// Updates time display (shows penalty if final answer was wrong) and stops the count
 function endQuiz() {
     timeEl.textContent = time;
     if (time > 0) {
@@ -193,25 +192,42 @@ function endQuiz() {
     }
     clearQuestion();
     showForm();
-    console.log("Game Over");
 };
 
-
+// Shows form for submitting highscores
 function showForm() {
     highscorePromptEl.classList.remove('hide');
-    nameForm.addEventListener('submit', setHighscore);
+    finalTimeEl = document.getElementById('final-time');
+    finalTimeEl.textContent = time;
+    nameForm.addEventListener('submit', setHighscores);
 }
 
-function setHighscore(event) {
+// Add the current score to the highscore list
+function setHighscores(event) {
     event.preventDefault();
-    console.log("Form Submit");
-
     score = {
         score: time,
         name: nameField.value
     };
-
+    console.log(score);
     highscoreList.push(score);
     localStorage.setItem('highscores', JSON.stringify(highscoreList));
+    // Go to the highscore page. Pause to ensure score is saved
+    setInterval(location.href = "./highscores.html", 1000);
 
 }
+
+// // Gets and displays the stored highscores
+// function getHighscores() {
+//     storedHighscores = JSON.parse(localStorage.getItem('highscores'));
+//     console.log(storedHighscores);
+//     storedHighscores.sort((a, b) => parseFloat(b.score) - parseFloat(a.score)
+//     );
+//     console.log(storedHighscores);
+//     for (i = 0; i < storedHighscores.length; i++) {
+//         let highscoreItem = document.createElement('li');
+//         highscoreItem.textContent = `${storedHighscores[i].name} - ${storedHighscores[i].score}`;
+
+//         highscoreListEL.appendChild(highscoreItem);
+//     }
+// }
