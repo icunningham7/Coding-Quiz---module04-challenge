@@ -209,25 +209,9 @@ function setHighscores(event) {
         score: time,
         name: nameField.value
     };
-    console.log(score);
     highscoreList.push(score);
     localStorage.setItem('highscores', JSON.stringify(highscoreList));
     // Go to the highscore page. Pause to ensure score is saved
     setInterval(location.href = "./highscores.html", 1000);
 
 }
-
-// // Gets and displays the stored highscores
-// function getHighscores() {
-//     storedHighscores = JSON.parse(localStorage.getItem('highscores'));
-//     console.log(storedHighscores);
-//     storedHighscores.sort((a, b) => parseFloat(b.score) - parseFloat(a.score)
-//     );
-//     console.log(storedHighscores);
-//     for (i = 0; i < storedHighscores.length; i++) {
-//         let highscoreItem = document.createElement('li');
-//         highscoreItem.textContent = `${storedHighscores[i].name} - ${storedHighscores[i].score}`;
-
-//         highscoreListEL.appendChild(highscoreItem);
-//     }
-// }

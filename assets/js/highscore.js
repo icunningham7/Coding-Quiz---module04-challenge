@@ -15,11 +15,10 @@ clearScoreBtn.addEventListener('click', clearHighscores);
 
 // Gets and displays the stored highscores
 function getHighscores() {
-    if (highscoreList) {
+    if (highscoreList.length > 0) {
         storedHighscores = JSON.parse(localStorage.getItem('highscores'));
         storedHighscores.sort((a, b) => parseFloat(b.score) - parseFloat(a.score)
         );
-        console.log(storedHighscores);
         for (i = 0; i < storedHighscores.length; i++) {
             let highscoreItem = document.createElement('li');
             highscoreItem.textContent = `${storedHighscores[i].name} - ${storedHighscores[i].score}`;
@@ -33,9 +32,7 @@ function getHighscores() {
 
 function clearHighscores(event) {
     event.preventDefault();
-    console.log("clearing");
     localStorage.removeItem('highscores');
     location.reload();
 };
-console.log("running");
 getHighscores();
